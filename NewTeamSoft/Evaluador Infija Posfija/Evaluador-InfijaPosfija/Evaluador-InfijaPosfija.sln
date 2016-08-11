@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Interfaz de Usuario", "Interfaz de Usuario", "{DCCE2D67-AE91-4764-B784-A9973647DEE8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Windows", "Windows", "{235C17E4-12B5-4D79-A23A-77EF40E6402C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evaluador-InfijaPosfija", "..\V1.0\Fuente\Interfaz de Usuarios\Windows\Evaluador-InfijaPosfija.csproj", "{8F0B5311-0B08-41C0-9DD0-7B8390B13DF5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8F0B5311-0B08-41C0-9DD0-7B8390B13DF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F0B5311-0B08-41C0-9DD0-7B8390B13DF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F0B5311-0B08-41C0-9DD0-7B8390B13DF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F0B5311-0B08-41C0-9DD0-7B8390B13DF5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{235C17E4-12B5-4D79-A23A-77EF40E6402C} = {DCCE2D67-AE91-4764-B784-A9973647DEE8}
+		{8F0B5311-0B08-41C0-9DD0-7B8390B13DF5} = {235C17E4-12B5-4D79-A23A-77EF40E6402C}
+	EndGlobalSection
+EndGlobal
