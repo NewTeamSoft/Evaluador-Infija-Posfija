@@ -80,6 +80,7 @@
             this.buttonEvaluarExpresiones.TabIndex = 3;
             this.buttonEvaluarExpresiones.Text = "=";
             this.buttonEvaluarExpresiones.UseVisualStyleBackColor = true;
+            this.buttonEvaluarExpresiones.Click += new System.EventHandler(this.buttonEvaluarExpresiones_Click);
             // 
             // label1
             // 
@@ -281,7 +282,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(201, 360);
+            this.ClientSize = new System.Drawing.Size(205, 360);
             this.Controls.Add(this.textBoxResultado);
             this.Controls.Add(this.button18);
             this.Controls.Add(this.button16);
@@ -308,7 +309,7 @@
             this.Controls.Add(this.textBoxInfija);
             this.Name = "FormEvaluadorExpresiones";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = ".:. Evaluador de expresiones .:.";
+            this.Text = " ";
             this.ResumeLayout(false);
             this.PerformLayout();
 

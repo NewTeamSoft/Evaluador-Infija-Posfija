@@ -1,4 +1,4 @@
-﻿#region    Librerias de Clase del Evaluador de Expreciones
+﻿#region    Librerias de Clase que Utiliza el Evaluador de Expresiones Aritmetica
 
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-#endregion Librerias de Clase del Evaluador de Expreciones
+#endregion Librerias de Clase que Utiliza el Evaluador de Expresiones Aritmetica
+
+#region    Espacio del Nombre Principal del Evaluador de Expresiones Aritmetica
 
 namespace EvaluadorInfijaPosfija.Clases
 {
@@ -20,106 +22,82 @@ namespace EvaluadorInfijaPosfija.Clases
         Funcion,
         Constante
     }
-    class ClassEvaluadorInfijoPosfijo
-    {
-        #region Propiedades y Campos
-        private string expresion;
-        private string postfija;
 
+    #region    Clase Publica del Evaluador de Expresiones Aritmetica
+
+    public class ClassEvaluadorInfijoPostfija
+    {
+
+        #region    Propiedad Postfija de Lectura y Escritura
+
+        //Variable para almacenar la exprecion matematica de notacion postfija      
+        string postfija;
+    
         /// <summary>
-        /// Cadena que representa la expresion en notacion postfija
+        /// Propiedad que representa la expresion en notacion postfija
         /// </summary>
         public string PostFija
         {
             get { return postfija; }
         }
 
-        /// <summary>
-        /// Cadena que representa la expresion en forma normal
-        /// </summary>
-        public string InFija
-        {
-            get { return expresion; }
-            set
-            {
-                expresion = value;
-                postfija = ConvertirInfija(value);
-            }
-        }
+        #endregion Propiedad Postfija de Lectura y Escritura
 
-        #endregion
-
-        #region Constructor
-        public void  Evaluador(string expresion)
-        {
-            this.expresion = expresion;
-            this.postfija = ConvertirInfija(expresion);
-        }
-        #endregion
-
-        #region funciones
-        /// <summary>
-        /// Evalua la expresion
-        /// </summary>
-        public double F()
-        {
-            return EvaluarPostfija(postfija, 0, 0, 0);
-        }
+        #region    Procedimiento Publico Evaluador Infijo Postfijo
 
         /// <summary>
-        /// Evalua la expresion en x
+        /// Procedimiento publico. Obtiene una expresion aritmetica de notacion infija para luego ser convertida a postfija 
         /// </summary>
-        public double F(double x)
+        /// <param name="expresion"> Recive la expresion aritmetica infija </param>
+        public void evaluador(string expresion)
         {
-            return EvaluarPostfija(postfija, x, 0, 0);
+            //Convierte la Exprecion Infija a Posfija Para Luego Ser Asignada a la Variable Postfija
+            postfija = convertirInfijaPostfija(expresion);
         }
 
+        #endregion Procedimiento Publico Evaluador Infijo Postfijo
+
+        #region    Funcion Publica Evalua y Obtiene la Expresion Postfija
+
         /// <summary>
-        /// Evalua la expresion en x,y
+        /// Funcion Publica. Evalua la expresion postfija
         /// </summary>
-        public double F(double x, double y)
+        /// <returns> La expresion postfija</returns>
+        public double obtenerPostfija()
         {
-            return EvaluarPostfija(postfija, x, y, 0);
+            return evaluarPostfija(postfija);
         }
 
-        /// <summary>
-        /// Evalua la expresion en x,y,z
-        /// </summary>
-        public double F(double x, double y, double z)
-        {
-            return EvaluarPostfija(postfija, x, y, z);
-        }
-        #endregion
+        #endregion Funcion Publica Evalua y Obtiene la Expresion Postfija
 
+        #region    Funcion Publica Evalua la Expresion Postfija (Maquina de Pila Abstracta)
 
         /// <summary>
-        /// Evalua una expresion postfija
+        /// Funcion publica tipo double. Evalua una expresion postfija y obtiene
+        /// el resultado de la operacion (Maquina de pila abstracta).
         /// </summary>
-        /// <param name="expresion"></param>
-        private double EvaluarPostfija(string expresion, double x, double y, double z)
+        /// <param name="expresionPostfija"> Recive la expresion postfija </param>
+        public double evaluarPostfija(string expresionPostfija)
         {
+            // Pila
             Stack<double> pila = new Stack<double>();
-            string[] tokens = expresion.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+             
+            //Lista de Tokens Obtenida de la Expresion Postfia
+            string[] tokens = expresionPostfija.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
             double operando = 0.0;
 
+            //Ciclo Foreach Para Recorrer Todos los Tokens de la Expresion Postfija
             foreach (string token in tokens)
             {
+                //Obtiene el Tipo de Tokens, Si es un Operando o Operador.
                 Tipo tipo = GetTipo(token);
 
-                if (tipo == Tipo.Operador || tipo == Tipo.Funcion)
+                //Verifica si es un Operador
+                if (tipo == Tipo.Operador )
                     EjecutarOperacion(pila, token);
+
                 else if (double.TryParse(token, out operando))
                     pila.Push(operando);
-                else if (token == "x")
-                    pila.Push(x);
-                else if (token == "y")
-                    pila.Push(y);
-                else if (token == "z")
-                    pila.Push(z);
-                else if (token == "pi")
-                    pila.Push(Math.PI);
-                else if (token == "e")
-                    pila.Push(Math.E);
                 else throw new Exception("Error formato numerico no valido");
             }
 
@@ -128,6 +106,8 @@ namespace EvaluadorInfijaPosfija.Clases
 
             return pila.Pop();
         }
+
+        #endregion Funcion Publica Evalua la Expresion Postfija (Maquina de Pila Abstracta)
 
         /// <summary>
         /// Ejecuta la operacion especificada por el operador
@@ -156,54 +136,6 @@ namespace EvaluadorInfijaPosfija.Clases
                 case "^":
                     pila.Push(Math.Pow(GetOperando(pila), first));
                     break;
-                case "%":
-                    pila.Push(GetOperando(pila) % first);
-                    break;
-                case "sin":
-                    pila.Push(Math.Sin(first));
-                    break;
-                case "cos":
-                    pila.Push(Math.Cos(first));
-                    break;
-                case "tan":
-                    pila.Push(Math.Tan(first));
-                    break;
-                case "sinh":
-                    pila.Push(Math.Sinh(first));
-                    break;
-                case "cosh":
-                    pila.Push(Math.Cosh(first));
-                    break;
-                case "tanh":
-                    pila.Push(Math.Tanh(first));
-                    break;
-                case "ln":
-                    pila.Push(Math.Log(first));
-                    break;
-                case "log":
-                    pila.Push(Math.Log10(first));
-                    break;
-                case "abs":
-                    pila.Push(Math.Abs(first));
-                    break;
-                case "sec":
-                    pila.Push(1 / Math.Cos(first));
-                    break;
-                case "csc":
-                    pila.Push(1 / Math.Sin(first));
-                    break;
-                case "cot":
-                    pila.Push(1 / Math.Tan(first));
-                    break;
-                case "sech":
-                    pila.Push(2 / (Math.Exp(first) + Math.Exp(-first)));
-                    break;
-                case "csch":
-                    pila.Push(2 / (Math.Exp(first) - Math.Exp(-first)));
-                    break;
-                case "coth":
-                    pila.Push((Math.Exp(first) + Math.Exp(-first)) / (Math.Exp(first) - Math.Exp(-first)));
-                    break;
                 default:
                     throw new Exception("Error operacion no admitida");
             }
@@ -223,7 +155,7 @@ namespace EvaluadorInfijaPosfija.Clases
         /// </summary>
         /// <param name="expresion">expresion matamatica valida que se desea convertir</param>
         /// <returns>Devuelve la expresion en notacion postfija.</returns>
-        private string ConvertirInfija(string expresion)
+        private string convertirInfijaPostfija(string expresion)
         {
             expresion = expresion.ToLower();
             StringBuilder salida = new StringBuilder();
@@ -238,11 +170,11 @@ namespace EvaluadorInfijaPosfija.Clases
 
                 if (string.IsNullOrWhiteSpace(token)) continue;
 
-                if (i + 1 < expresion.Length && expresion[i] == 'p' && expresion[i + 1] == 'i')
-                {
-                    token = "pi";
-                    i++;
-                }
+                ////////////////////if (i + 1 < expresion.Length && expresion[i] == 'p' && expresion[i + 1] == 'i')
+                ////////////////////{
+                ////////////////////    token = "pi";
+                ////////////////////    i++;
+                ////////////////////}
 
                 tipo = GetTipo(token);
 
@@ -436,36 +368,17 @@ namespace EvaluadorInfijaPosfija.Clases
                 case "^":
                 case "%":
                     return Tipo.Operador;
-                case "e":
-                case "x":
-                case "y":
-                case "z":
-                case "pi":
-                    return Tipo.Constante;
                 case "(":
                     return Tipo.ParentesisA;
                 case ")":
                     return Tipo.ParentesisB;
-                case "sin":
-                case "cos":
-                case "tan":
-                case "sinh":
-                case "cosh":
-                case "tanh":
-                case "ln":
-                case "log":
-                case "abs":
-                case "sec":
-                case "csc":
-                case "cot":
-                case "sech":
-                case "csch":
-                case "coth":
-                    //agregar una nueva funcion aqui.
-                    return Tipo.Funcion;
                 default:
                     return Tipo.Invalido;
             }
         }
     }
+
+    #endregion Clase Publica del Evaluador de Expresiones Aritmetica
 }
+
+#endregion Espacio del Nombre Principal del Evaluador de Expresiones Aritmetica
