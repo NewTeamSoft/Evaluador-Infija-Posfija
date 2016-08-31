@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 
 namespace EvaluadorInfijaPosfija.Clases
 {
+    #region    Enum Para Determinar el Tipo de Token
+
     enum Tipo
     {
         Invalido,
@@ -23,6 +25,8 @@ namespace EvaluadorInfijaPosfija.Clases
         Constante
     }
 
+    #endregion Enum Para Determinar el Tipo de Token
+
     #region    Clase Publica del Evaluador de Expresiones Aritmetica
 
     public class ClassEvaluadorInfijoPostfija
@@ -32,7 +36,7 @@ namespace EvaluadorInfijaPosfija.Clases
 
         //Variable para almacenar la exprecion matematica de notacion postfija      
         string postfija;
-    
+
         /// <summary>
         /// Propiedad que representa la expresion en notacion postfija
         /// </summary>
@@ -48,11 +52,11 @@ namespace EvaluadorInfijaPosfija.Clases
         /// <summary>
         /// Procedimiento publico. Obtiene una expresion aritmetica de notacion infija para luego ser convertida a postfija 
         /// </summary>
-        /// <param name="expresion"> Recive la expresion aritmetica infija </param>
-        public void evaluador(string expresion)
+        /// <param name="expresionInfija"> Recive la expresion aritmetica infija </param>
+        public void evaluador(string expresionInfija)
         {
             //Convierte la Exprecion Infija a Posfija Para Luego Ser Asignada a la Variable Postfija
-            postfija = convertirInfijaPostfija(expresion);
+            postfija = convertirInfijaPostfija(expresionInfija);
         }
 
         #endregion Procedimiento Publico Evaluador Infijo Postfijo
@@ -81,7 +85,7 @@ namespace EvaluadorInfijaPosfija.Clases
         {
             // Pila
             Stack<double> pila = new Stack<double>();
-             
+
             //Lista de Tokens Obtenida de la Expresion Postfia
             string[] tokens = expresionPostfija.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
             double operando = 0.0;
@@ -90,10 +94,10 @@ namespace EvaluadorInfijaPosfija.Clases
             foreach (string token in tokens)
             {
                 //Obtiene el Tipo de Tokens, Si es un Operando o Operador.
-                Tipo tipo = GetTipo(token);
+                Tipo tipo = obtenerTipoToken(token);
 
                 //Verifica si es un Operador
-                if (tipo == Tipo.Operador )
+                if (tipo == Tipo.Operador)
                     EjecutarOperacion(pila, token);
 
                 else if (double.TryParse(token, out operando))
@@ -109,88 +113,110 @@ namespace EvaluadorInfijaPosfija.Clases
 
         #endregion Funcion Publica Evalua la Expresion Postfija (Maquina de Pila Abstracta)
 
-        /// <summary>
-        /// Ejecuta la operacion especificada por el operador
-        /// </summary>
-        /// <param name="pila">pila de operandos</param>
-        /// <param name="operacion">operacion a ejecutar</param>
-        private void EjecutarOperacion(Stack<double> pila, string operacion)
-        {
-            double first = GetOperando(pila);
+        #region    Procedimiento Privado Ejecuta la Operacion Aritmetica Con la Notacion Postfija
 
-            switch (operacion)
+        /// <summary>
+        /// Procedimiento privado. Ejecuta la operacion aritmetica con la notacion postfija 
+        /// y obtiene el resultado de la operacion.
+        /// </summary>
+        /// <param name="pilaOperandos">Pila de operandos</param>
+        /// <param name="tipoOperacion">Tipo de operacion aritmetica</param>
+        private void EjecutarOperacion(Stack<double> pilaOperandos, string tipoOperacion)
+        {
+            //Obtiene el Operando de Pila de Operando Para Ser Asignada a la Variable Primer Operando
+            double primerOperando = obtenerOperando(pilaOperandos);
+
+            //Selecciona el Tipo de Operacion Para Realizar la Operacion Aritmetica.
+            switch (tipoOperacion)
             {
                 case "+":
-                    pila.Push(GetOperando(pila) + first);
+                    pilaOperandos.Push(obtenerOperando(pilaOperandos) + primerOperando);
                     break;
                 case "-":
-                    pila.Push(GetOperando(pila) - first);
+                    pilaOperandos.Push(obtenerOperando(pilaOperandos) - primerOperando);
                     break;
                 case "*":
-                    pila.Push(GetOperando(pila) * first);
+                    pilaOperandos.Push(obtenerOperando(pilaOperandos) * primerOperando);
                     break;
                 case "/":
-                    if (first == 0) throw new DivideByZeroException("Error division por cero");
-                    pila.Push(GetOperando(pila) / first);
+                    if (primerOperando == 0) throw new DivideByZeroException("Error division por cero");
+                    pilaOperandos.Push(obtenerOperando(pilaOperandos) / primerOperando);
                     break;
                 case "^":
-                    pila.Push(Math.Pow(GetOperando(pila), first));
+                    pilaOperandos.Push(Math.Pow(obtenerOperando(pilaOperandos), primerOperando));
                     break;
                 default:
                     throw new Exception("Error operacion no admitida");
             }
         }
 
+        #endregion Procedimiento Privado Ejecuta la Operacion Aritmetica Con la Notacion Postfija
+
+        #region    Funcion Privada Para Obtener los Operandos
+
         /// <summary>
-        /// Devuelve un operando de la pila
+        /// Funcion privada de tipo double. Devuelve un operando de la pila de operandos
         /// </summary>
-        private double GetOperando(Stack<double> pila)
+        /// <param name="pilaOperando"> Recive la cantidad de operandos de la pila</param>
+        /// <returns> Operando obtenido </returns>
+        private double obtenerOperando(Stack<double> pilaOperando)
         {
-            if (pila.Count == 0) throw new Exception("Error faltan operandos");
-            return pila.Pop();
+            //Cuenta la Cantidad de Operandos que Hay en la Pila de Operando
+            if (pilaOperando.Count == 0) throw new Exception("Error faltan operandos");
+
+            //Retira de la Pila de el Operando
+            return pilaOperando.Pop();
         }
 
+        #endregion Funcion Privada Para Obtener los Operandos
+
+        #region    Funcion Privada Convierte la Expresion Infija a Postfija
+
         /// <summary>
-        /// Convierte una expresion infija en una expresion postfija
+        /// Funcion privada de tipo string. Convierte una expresion infija a una expresion postfija
         /// </summary>
-        /// <param name="expresion">expresion matamatica valida que se desea convertir</param>
-        /// <returns>Devuelve la expresion en notacion postfija.</returns>
-        private string convertirInfijaPostfija(string expresion)
+        /// <param name="expresionInfija">Recive la expresion infija para convertirla a postfija</param>
+        /// <returns>Devuelve la expresion en notacion postfija</returns>
+        private string convertirInfijaPostfija(string expresionInfija)
         {
-            expresion = expresion.ToLower();
-            StringBuilder salida = new StringBuilder();
+            //Instancia de la Clase StringBuilder. Manipula y Modifica una Cadena Sin Crear un Objeto Nuevo
+            StringBuilder colaSalida = new StringBuilder();
+
+            //Representa una Colección de Objetos no Genérica de Operadores el Ultimo en Entrar es el Primero en Salir 
             Stack<string> operadores = new Stack<string>();
+
+            //Variable Para Almacenar los Tokens de la Expresion Infija
             string token = string.Empty;
-            Tipo tipo = Tipo.Invalido;
+
+            Tipo tipoToken = Tipo.Invalido;
             Tipo last = Tipo.Invalido;
 
-            for (int i = 0; i < expresion.Length; i++)
+            //Recorre Cada uno de los Elementos de la Expresion Infija
+            for (int i = 0; i < expresionInfija.Length; i++)
             {
-                token = expresion[i].ToString();
+                //Almacena en la Variable Token los Tokens de la Expresion Infija
+                token = expresionInfija[i].ToString();
 
+                //Verifica si la Cadena Especificada es Null, Está Vacía o Consta Unicamente de Caracteres de Espacio en Blanco
                 if (string.IsNullOrWhiteSpace(token)) continue;
 
-                ////////////////////if (i + 1 < expresion.Length && expresion[i] == 'p' && expresion[i + 1] == 'i')
-                ////////////////////{
-                ////////////////////    token = "pi";
-                ////////////////////    i++;
-                ////////////////////}
+                //Obtiene el Tipo de Token. Si es un Operando o un Operador
+                tipoToken = obtenerTipoToken(token);
 
-                tipo = GetTipo(token);
-
-                if (tipo == Tipo.Operando)
+                //
+                if (tipoToken == Tipo.Operando)
                 {
                     if (last == Tipo.Constante || last == Tipo.ParentesisB)
-                        ApilarOperador(salida, operadores, "*");
+                        ApilarOperador(colaSalida, operadores, "*");
 
-                    salida.Append(token);
+                    colaSalida.Append(token);
                 }
-                else if (tipo == Tipo.Constante)
+                else if (tipoToken == Tipo.Constante)
                 {
-                    VerificarMultiplicacionOculta(salida, operadores, last);
-                    salida.Append(" " + token + " ");
+                    VerificarMultiplicacionOculta(colaSalida, operadores, last);
+                    colaSalida.Append(" " + token + " ");
                 }
-                else if (tipo == Tipo.Operador)
+                else if (tipoToken == Tipo.Operador)
                 {
                     if (last == Tipo.Operador && token != "-")
                         throw new Exception("Error falta operando");
@@ -199,46 +225,51 @@ namespace EvaluadorInfijaPosfija.Clases
                         (last == Tipo.Invalido && token == "-") ||
                         (last == Tipo.ParentesisA && token == "-"))
                     {
-                        salida.Append(" -1 ");
+                        colaSalida.Append(" -1 ");
                         operadores.Push("*");
                     }
-                    else ApilarOperador(salida, operadores, token);
+                    else ApilarOperador(colaSalida, operadores, token);
                 }
-                else if (tipo == Tipo.ParentesisA)
+                else if (tipoToken == Tipo.ParentesisA)
                 {
-                    VerificarMultiplicacionOculta(salida, operadores, last);
+                    VerificarMultiplicacionOculta(colaSalida, operadores, last);
                     operadores.Push("(");
                 }
-                else if (tipo == Tipo.ParentesisB) DesapilarParentesis(salida, operadores);
+                else if (tipoToken == Tipo.ParentesisB) DesapilarParentesis(colaSalida, operadores);
                 else
                 {
-                    int index = expresion.IndexOf('(', i);
+                    int index = expresionInfija.IndexOf('(', i);
                     if (index < 0) throw new Exception("Error en sintaxis");
-                    string newtoken = expresion.Substring(i, index - i);
+                    string newtoken = expresionInfija.Substring(i, index - i);
                     i = index - 1;
 
-                    tipo = GetTipo(newtoken);
+                    tipoToken = obtenerTipoToken(newtoken);
 
-                    if (tipo == Tipo.Funcion)
+                    if (tipoToken == Tipo.Funcion)
                     {
-                        VerificarMultiplicacionOculta(salida, operadores, last);
+                        VerificarMultiplicacionOculta(colaSalida, operadores, last);
                         operadores.Push(newtoken);
                     }
                     else throw new Exception("Error de sintaxis");
                 }
 
-                last = tipo;
+                last = tipoToken;
             }
 
-            VaciarOperandos(salida, operadores);
-            RemoverEspaciosVacios(salida);
+            VaciarOperandos(colaSalida, operadores);
+            RemoverEspaciosVacios(colaSalida);
 
-            return salida.ToString();
+            return colaSalida.ToString();
         }
 
+        #endregion  Funcion Privada Convierte la Expresion Infija a Postfija
+
+        #region     Procedimiento Privado Remueve los Espacios Inncesesarios de la Expresion Postfija.
+
         /// <summary>
-        /// Elimina espacios en blanco innecesarios
+        /// Procedimiento Privado. Elimina espacios en blanco innecesarios
         /// </summary>
+        /// <param name="salida"></param>
         private void RemoverEspaciosVacios(StringBuilder salida)
         {
             if (salida[0] == ' ') salida.Remove(0, 1);
@@ -251,15 +282,24 @@ namespace EvaluadorInfijaPosfija.Clases
             }
         }
 
+        #endregion Procedimiento Privado Remueve los Espacios Inncesesarios de la Expresion Postfija
+
+        #region     Procedimiento Privado Verifica la Multiplicacion.
         /// <summary>
         /// Verifica si hay una multiplicacion oculta y la procesa
         /// </summary>
+        /// <param name="salida"></param>
+        /// <param name="operadores"></param>
+        /// <param name="last"></param>
         private void VerificarMultiplicacionOculta(StringBuilder salida, Stack<string> operadores, Tipo last)
         {
             if (last == Tipo.Constante || last == Tipo.Operando || last == Tipo.ParentesisB)
                 ApilarOperador(salida, operadores, "*");
         }
 
+        #endregion Procedimiento Privado Verifica la Multiplicacion
+
+        #region Procedimiento Privado Apila todos los Operadores de la Operasion
         /// <summary>
         /// Agrega un aperador a la pila de operandos
         /// </summary>
@@ -270,9 +310,15 @@ namespace EvaluadorInfijaPosfija.Clases
             operadores.Push(token);
         }
 
+        #endregion Procedimiento Privado Apila todos los Operadores de la Operasion
+
+        #region    Procedimiento Privado Salida de los Operadores Hasta Encontrar Parentesis
+
         /// <summary>
         /// Envia a la salida todos los operadores hasta encontrar un parentesis
         /// </summary>
+        /// <param name="salida"></param>
+        /// <param name="operadores"></param>
         private void DesapilarParentesis(StringBuilder salida, Stack<string> operadores)
         {
             string sop = operadores.Pop();
@@ -288,9 +334,15 @@ namespace EvaluadorInfijaPosfija.Clases
             }
         }
 
+        #endregion Procedimiento Privado Salida de los Operadores Hasta Encontrar Parentesis
+
+        #region    Procedimiento Privado Envia los Operandos a la Cola de Salida
+
         /// <summary>
         /// Envia todos los operadores restantes en la pila a la salida
         /// </summary>
+        /// <param name="salida"></param>
+        /// <param name="operadores"></param>
         private void VaciarOperandos(StringBuilder salida, Stack<string> operadores)
         {
             salida.Append(" ");
@@ -305,6 +357,10 @@ namespace EvaluadorInfijaPosfija.Clases
                 salida.Append(sop + " ");
             }
         }
+
+        #endregion Procedimiento Privado Envia los Operandos a la Cola de Salida
+
+        #region    Procedimiento Privado Agrega los Operando de Mayor Presedencia a la Cola de Salida
 
         /// <summary>
         /// Agrega a la salida todos aquellos operandos de mayor presedencia
@@ -329,9 +385,15 @@ namespace EvaluadorInfijaPosfija.Clases
                 operadores.Push(op);
         }
 
+        #endregion Procedimiento Privado Agrega los Operando de Mayor Presedencia a la Cola de Salida
+
+        #region    Funcion Privada de Tipo Byte Determina la Mayor Precedencia Entre Operadores
+
         /// <summary>
-        /// Determina la prioridad de un operando
+        /// Funcion privada de tipo byte. Determina la precedencia de los operadores
         /// </summary>
+        /// <param name="operando"> Operadores </param>
+        /// <returns> La mayor precedencia entre operadores</returns>
         private byte Prioridad(string operando)
         {
             switch (operando)
@@ -352,14 +414,22 @@ namespace EvaluadorInfijaPosfija.Clases
             }
         }
 
-        /// <summary>
-        /// Devuelve el tipo que define a un token
-        /// </summary>
-        private Tipo GetTipo(string token)
-        {
-            if (char.IsDigit(token[0]) || token == ".") return Tipo.Operando;
+        #endregion Funcion Privada de Tipo Byte Determina la Mayor Precedencia Entre Operadores
 
-            switch (token)
+        #region    Funcion Privada de Tipo Enum Obtiene el Tipo de Token
+
+        /// <summary>
+        /// Funcion privada de tipo enum. Obtiene el tipo de token
+        /// </summary>
+        /// <param name="tipoToken"> Recive el token espesificado </param>
+        /// <returns>El tipo de token</returns>
+        private Tipo obtenerTipoToken(string tipoToken)
+        {
+            //Verifica si el Tokens es un Digito (Operando) y Devuelve el Tipo Operando
+            if (char.IsDigit(tipoToken[0]) || tipoToken == ".") return Tipo.Operando;
+
+            //Busca el Tipo de Token
+            switch (tipoToken)
             {
                 case "/":
                 case "*":
@@ -376,6 +446,9 @@ namespace EvaluadorInfijaPosfija.Clases
                     return Tipo.Invalido;
             }
         }
+
+        #endregion Funcion Privada de Tipo Enum Obtiene el Tipo de Token
+
     }
 
     #endregion Clase Publica del Evaluador de Expresiones Aritmetica
